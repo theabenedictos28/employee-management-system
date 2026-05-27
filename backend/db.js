@@ -1,13 +1,8 @@
-const sql = require("mssql");
+const sql = require("mssql/msnodesqlv8");
 
 const config = {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    server: process.env.DB_SERVER,
-    database: process.env.DB_DATABASE,
-    options: {
-        trustServerCertificate: true
-    }
+    connectionString:
+        "Driver={ODBC Driver 17 for SQL Server};Server=LAPTOP-G38IPNK6\\SQLEXPRESS;Database=EmployeeDB;Trusted_Connection=Yes;"
 };
 
 sql.connect(config)
