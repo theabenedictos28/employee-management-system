@@ -16,7 +16,9 @@ import {
     Modal,
     Form,
     Input,
-    InputNumber
+    InputNumber,
+    Avatar,
+    Divider
 } from "antd";
 
 import {
@@ -25,28 +27,27 @@ import {
     LogoutOutlined,
     TeamOutlined,
     DollarOutlined,
-    FileTextOutlined
+    FileTextOutlined,
+    PlusOutlined,
+    EditOutlined,
+    DeleteOutlined
 } from "@ant-design/icons";
 
 import { useNavigate } from "react-router-dom";
 
 const { Header, Sider, Content } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 function Dashboard() {
 
     const [employees, setEmployees] = useState([]);
-
     const [open, setOpen] = useState(false);
-
     const [editOpen, setEditOpen] = useState(false);
-
     const [editingEmployee, setEditingEmployee] = useState(null);
-
     const [selectedMenu, setSelectedMenu] = useState("1");
+    const [collapsed, setCollapsed] = useState(false);
 
     const [addForm] = Form.useForm();
-
     const [editForm] = Form.useForm();
 
     const navigate = useNavigate();
@@ -84,10 +85,7 @@ function Dashboard() {
 
         try {
 
-            await api.post(
-                "/employees",
-                values
-            );
+            await api.post("/employees", values);
 
             message.success("Employee Added");
 
@@ -107,7 +105,7 @@ function Dashboard() {
 
     };
 
-    // OPEN EDIT MODAL
+    // EDIT
     const handleEdit = (record) => {
 
         setEditingEmployee(record);
@@ -122,7 +120,7 @@ function Dashboard() {
 
     };
 
-    // UPDATE EMPLOYEE
+    // UPDATE
     const handleUpdateEmployee = async (values) => {
 
         try {
@@ -135,8 +133,6 @@ function Dashboard() {
             message.success("Employee Updated");
 
             setEditOpen(false);
-
-            setEditingEmployee(null);
 
             editForm.resetFields();
 
@@ -152,7 +148,7 @@ function Dashboard() {
 
     };
 
-    // DELETE EMPLOYEE
+    // DELETE
     const handleDelete = async (id) => {
 
         try {
@@ -173,7 +169,7 @@ function Dashboard() {
 
     };
 
-    // GENERATE REPORT
+    // REPORT
     const handleGenerateReport = () => {
 
         const report = `
@@ -228,31 +224,58 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
         0
     );
 
-    // UNIQUE DEPARTMENTS
+    // TOTAL DEPARTMENT
     const totalDepartments = [
         ...new Set(
             employees.map((emp) => emp.department)
         )
     ].length;
 
-    // TABLE COLUMNS
+    // TABLE
     const columns = [
         {
-            title: "ID",
-            dataIndex: "id",
-            key: "id"
-        },
-        {
-            title: "Full Name",
-            dataIndex: "fullname",
-            key: "fullname"
+            title: "Employee",
+            key: "employee",
+            render: (_, record) => (
+                <Space size={12}>
+                    <Avatar
+                        size={42}
+                        icon={<UserOutlined />}
+                    />
+
+                    <div>
+                        <Text strong>
+                            {record.fullname}
+                        </Text>
+
+                        <br />
+
+                        <Text
+                            type="secondary"
+                            style={{
+                                fontSize: 12
+                            }}
+                        >
+                            ID: {record.id}
+                        </Text>
+                    </div>
+                </Space>
+            )
         },
         {
             title: "Department",
             dataIndex: "department",
             key: "department",
+            align: "center",
             render: (department) => (
-                <Tag color="blue">
+                <Tag
+                    color="blue"
+                    style={{
+                        borderRadius: 20,
+                        padding: "4px 14px",
+                        fontSize: 13
+                    }}
+                >
                     {department}
                 </Tag>
             )
@@ -261,17 +284,22 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
             title: "Salary",
             dataIndex: "salary",
             key: "salary",
-            render: (salary) =>
-                `₱${Number(salary).toLocaleString()}`
+            align: "center",
+            render: (salary) => (
+                <Text strong>
+                    ₱{Number(salary).toLocaleString()}
+                </Text>
+            )
         },
         {
             title: "Action",
             key: "action",
+            align: "center",
             render: (_, record) => (
-                <Space>
-
+                <Space wrap>
                     <Button
                         type="primary"
+                        icon={<EditOutlined />}
                         onClick={() => handleEdit(record)}
                     >
                         Edit
@@ -279,11 +307,11 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
 
                     <Button
                         danger
+                        icon={<DeleteOutlined />}
                         onClick={() => handleDelete(record.id)}
                     >
                         Delete
                     </Button>
-
                 </Space>
             )
         }
@@ -294,25 +322,57 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
         <Layout style={{ minHeight: "100vh" }}>
 
             {/* SIDEBAR */}
-            <Sider>
+            <Sider
+                collapsible
+                collapsed={collapsed}
+                onCollapse={(value) => setCollapsed(value)}
+                width={240}
+                style={{
+                    background: "#001529"
+                }}
+            >
 
                 <div
-                    style={{
-                        color: "white",
-                        padding: 20,
-                        fontSize: 22,
-                        fontWeight: "bold",
-                        textAlign: "center"
-                    }}
-                >
-                    EMS
-                </div>
+                        style={{
+                            height: 70,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: collapsed ? "center" : "flex-start",
+                            paddingInline: collapsed ? 0 : 20,
+                            gap: 12,
+                            color: "#fff",
+                            fontSize: 18,
+                            fontWeight: "700",
+                            borderBottom: "1px solid rgba(255,255,255,0.1)"
+                        }}
+                    >
+
+                        <Avatar
+                            size={40}
+                            style={{
+                                background: "#1677ff",
+                                flexShrink: 0
+                            }}
+                            icon={<TeamOutlined />}
+                        />
+
+                        {!collapsed && (
+                            <span>
+                               Workbridge EMS
+                            </span>
+                        )}
+
+                    </div>
 
                 <Menu
                     theme="dark"
                     mode="inline"
                     selectedKeys={[selectedMenu]}
                     onClick={(e) => setSelectedMenu(e.key)}
+                    style={{
+                        marginTop: 10,
+                        borderInlineEnd: "none"
+                    }}
                     items={[
                         {
                             key: "1",
@@ -321,13 +381,13 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
                         },
                         {
                             key: "2",
-                            icon: <UserOutlined />,
+                            icon: <TeamOutlined />,
                             label: "Employees"
                         },
                         {
                             key: "3",
                             icon: <FileTextOutlined />,
-                            label: "Generate Report"
+                            label: "Reports"
                         }
                     ]}
                 />
@@ -337,126 +397,281 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
             {/* MAIN */}
             <Layout>
 
-                {/* HEADER */}
-                <Header
+{/* HEADER */}
+<Header
+    style={{
+        background: "#ffffff",
+        padding: "0 24px",
+        height: 72,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        borderBottom: "1px solid #f0f0f0",
+        position: "sticky",
+        top: 0,
+        zIndex: 1000
+    }}
+>
+
+    {/* LEFT */}
+    <div
+        style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center"
+        }}
+    >
+
+        <Title
+            level={3}
+            style={{
+                margin: 0,
+                fontSize: 24,
+                lineHeight: 1.2
+            }}
+        >
+            Employee Management System
+        </Title>
+
+        <Text
+            type="secondary"
+            style={{
+                fontSize: 13
+            }}
+        >
+            Manage employees and reports
+        </Text>
+
+    </div>
+
+    {/* RIGHT */}
+    <div
+        style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 18
+        }}
+    >
+
+        {/* ADMIN PROFILE */}
+        <div
+            style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                padding: "6px 14px",
+                border: "1px solid #f0f0f0",
+                borderRadius: 12,
+                background: "#fafafa"
+            }}
+        >
+
+            <Avatar
+                size={42}
+                icon={<UserOutlined />}
+            />
+
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    lineHeight: 1.1
+                }}
+            >
+
+                <Text
+                    strong
                     style={{
-                        background: "#fff",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        paddingInline: 20
+                        fontSize: 14
                     }}
                 >
+                    Admin
+                </Text>
 
-                    <Title
-                        level={3}
-                        style={{
-                            margin: 0
-                        }}
-                    >
-                        Employee Management System
-                    </Title>
+                <Text
+                    type="secondary"
+                    style={{
+                        fontSize: 12
+                    }}
+                >
+                    Administrator
+                </Text>
 
-                    <Button
-                        danger
-                        icon={<LogoutOutlined />}
-                        onClick={handleLogout}
-                    >
-                        Logout
-                    </Button>
+            </div>
 
-                </Header>
+        </div>
+
+        {/* LOGOUT BUTTON */}
+        <Button
+            danger
+            type="primary"
+            icon={<LogoutOutlined />}
+            onClick={handleLogout}
+            style={{
+                height: 42,
+                borderRadius: 10,
+                paddingInline: 18,
+                fontWeight: 500
+            }}
+        >
+            Logout
+        </Button>
+
+    </div>
+
+</Header>
 
                 {/* CONTENT */}
-                <Content style={{ padding: 20 }}>
+                <Content
+                    style={{
+                        padding: 24,
+                        background: "#f5f7fb"
+                    }}
+                >
 
                     {/* DASHBOARD */}
                     {selectedMenu === "1" && (
 
                         <>
 
-                            {/* REPORT CARDS */}
-                            <Row gutter={16}>
+                            <Row gutter={[20, 20]}>
 
-                                <Col span={8}>
-                                    <Card>
+                                <Col xs={24} md={8}>
 
-                                        <Space direction="vertical">
+                                    <Card
+                                        bordered={false}
+                                        style={{
+                                            borderRadius: 18,
+                                            height: "100%",
+                                            boxShadow: "0 2px 12px rgba(0,0,0,0.05)"
+                                        }}
+                                    >
 
-                                            <TeamOutlined
-                                                style={{
-                                                    fontSize: 30
-                                                }}
+                                        <Space
+                                            size={18}
+                                            align="center"
+                                        >
+
+                                            <Avatar
+                                                size={64}
+                                                icon={<TeamOutlined />}
                                             />
 
-                                            <Title level={4}>
-                                                Total Employees
-                                            </Title>
+                                            <div>
+                                                <Text type="secondary">
+                                                    Total Employees
+                                                </Text>
 
-                                            <Title level={2}>
-                                                {employees.length}
-                                            </Title>
+                                                <Title
+                                                    level={2}
+                                                    style={{
+                                                        margin: 0
+                                                    }}
+                                                >
+                                                    {employees.length}
+                                                </Title>
+                                            </div>
 
                                         </Space>
 
                                     </Card>
+
                                 </Col>
 
-                                <Col span={8}>
-                                    <Card>
+                                <Col xs={24} md={8}>
 
-                                        <Space direction="vertical">
+                                    <Card
+                                        bordered={false}
+                                        style={{
+                                            borderRadius: 18,
+                                            height: "100%",
+                                            boxShadow: "0 2px 12px rgba(0,0,0,0.05)"
+                                        }}
+                                    >
 
-                                            <UserOutlined
-                                                style={{
-                                                    fontSize: 30
-                                                }}
+                                        <Space
+                                            size={18}
+                                            align="center"
+                                        >
+
+                                            <Avatar
+                                                size={64}
+                                                icon={<UserOutlined />}
                                             />
 
-                                            <Title level={4}>
-                                                Departments
-                                            </Title>
+                                            <div>
+                                                <Text type="secondary">
+                                                    Departments
+                                                </Text>
 
-                                            <Title level={2}>
-                                                {totalDepartments}
-                                            </Title>
+                                                <Title
+                                                    level={2}
+                                                    style={{
+                                                        margin: 0
+                                                    }}
+                                                >
+                                                    {totalDepartments}
+                                                </Title>
+                                            </div>
 
                                         </Space>
 
                                     </Card>
+
                                 </Col>
 
-                                <Col span={8}>
-                                    <Card>
+                                <Col xs={24} md={8}>
 
-                                        <Space direction="vertical">
+                                    <Card
+                                        bordered={false}
+                                        style={{
+                                            borderRadius: 18,
+                                            height: "100%",
+                                            boxShadow: "0 2px 12px rgba(0,0,0,0.05)"
+                                        }}
+                                    >
 
-                                            <DollarOutlined
-                                                style={{
-                                                    fontSize: 30
-                                                }}
+                                        <Space
+                                            size={18}
+                                            align="center"
+                                        >
+
+                                            <Avatar
+                                                size={64}
+                                                icon={<DollarOutlined />}
                                             />
 
-                                            <Title level={4}>
-                                                Monthly Salary
-                                            </Title>
+                                            <div>
+                                                <Text type="secondary">
+                                                    Total Salary
+                                                </Text>
 
-                                            <Title level={2}>
-                                                ₱{totalSalary.toLocaleString()}
-                                            </Title>
+                                                <Title
+                                                    level={2}
+                                                    style={{
+                                                        margin: 0
+                                                    }}
+                                                >
+                                                    ₱{totalSalary.toLocaleString()}
+                                                </Title>
+                                            </div>
 
                                         </Space>
 
                                     </Card>
+
                                 </Col>
 
                             </Row>
 
                             {/* RECENT EMPLOYEES */}
                             <Card
+                                bordered={false}
                                 title="Recent Employees"
                                 style={{
-                                    marginTop: 20
+                                    marginTop: 24,
+                                    borderRadius: 18,
+                                    boxShadow: "0 2px 12px rgba(0,0,0,0.05)"
                                 }}
                             >
 
@@ -465,20 +680,48 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
                                     dataSource={[...employees]
                                         .sort((a, b) => b.id - a.id)
                                         .slice(0, 5)}
+                                    pagination={false}
                                     columns={[
                                         {
-                                            title: "ID",
-                                            dataIndex: "id"
-                                        },
-                                        {
-                                            title: "Full Name",
-                                            dataIndex: "fullname"
+                                            title: "Employee",
+                                            key: "employee",
+                                            render: (_, record) => (
+                                                <Space size={12}>
+                                                    <Avatar
+                                                        icon={<UserOutlined />}
+                                                    />
+
+                                                    <div>
+                                                        <Text strong>
+                                                            {record.fullname}
+                                                        </Text>
+
+                                                        <br />
+
+                                                        <Text
+                                                            type="secondary"
+                                                            style={{
+                                                                fontSize: 12
+                                                            }}
+                                                        >
+                                                            ID: {record.id}
+                                                        </Text>
+                                                    </div>
+                                                </Space>
+                                            )
                                         },
                                         {
                                             title: "Department",
                                             dataIndex: "department",
+                                            align: "center",
                                             render: (department) => (
-                                                <Tag color="blue">
+                                                <Tag
+                                                    color="blue"
+                                                    style={{
+                                                        borderRadius: 20,
+                                                        padding: "4px 14px"
+                                                    }}
+                                                >
                                                     {department}
                                                 </Tag>
                                             )
@@ -486,11 +729,14 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
                                         {
                                             title: "Salary",
                                             dataIndex: "salary",
-                                            render: (salary) =>
-                                                `₱${Number(salary).toLocaleString()}`
+                                            align: "center",
+                                            render: (salary) => (
+                                                <Text strong>
+                                                    ₱{Number(salary).toLocaleString()}
+                                                </Text>
+                                            )
                                         }
                                     ]}
-                                    pagination={false}
                                 />
 
                             </Card>
@@ -499,14 +745,20 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
 
                     )}
 
-                    {/* EMPLOYEE SECTION */}
+                    {/* EMPLOYEES */}
                     {selectedMenu === "2" && (
 
                         <Card
+                            bordered={false}
+                            style={{
+                                borderRadius: 18,
+                                boxShadow: "0 2px 12px rgba(0,0,0,0.05)"
+                            }}
                             title="Employee List"
                             extra={
                                 <Button
                                     type="primary"
+                                    icon={<PlusOutlined />}
                                     onClick={() => setOpen(true)}
                                 >
                                     Add Employee
@@ -527,14 +779,20 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
 
                     )}
 
-                    {/* REPORT SECTION */}
+                    {/* REPORTS */}
                     {selectedMenu === "3" && (
 
                         <Card
+                            bordered={false}
+                            style={{
+                                borderRadius: 18,
+                                boxShadow: "0 2px 12px rgba(0,0,0,0.05)"
+                            }}
                             title="Employee Report"
                             extra={
                                 <Button
                                     type="primary"
+                                    icon={<FileTextOutlined />}
                                     onClick={handleGenerateReport}
                                 >
                                     Generate Report
@@ -542,43 +800,95 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
                             }
                         >
 
-                            <Space
-                                direction="vertical"
-                                size="large"
-                            >
+                            <Row gutter={[20, 20]}>
 
-                                <Title level={4}>
-                                    Report Summary
-                                </Title>
+                                <Col xs={24} md={8}>
 
-                                <p>
-                                    Total Employees:
-                                    {" "}
-                                    {employees.length}
-                                </p>
+                                    <Card
+                                        bordered={false}
+                                        style={{
+                                            textAlign: "center",
+                                            borderRadius: 16,
+                                            background: "#fafafa"
+                                        }}
+                                    >
 
-                                <p>
-                                    Total Departments:
-                                    {" "}
-                                    {totalDepartments}
-                                </p>
+                                        <Title level={5}>
+                                            Employees
+                                        </Title>
 
-                                <p>
-                                    Total Salary:
-                                    {" "}
-                                    ₱{totalSalary.toLocaleString()}
-                                </p>
+                                        <Divider />
 
-                            </Space>
+                                        <Title level={2}>
+                                            {employees.length}
+                                        </Title>
+
+                                    </Card>
+
+                                </Col>
+
+                                <Col xs={24} md={8}>
+
+                                    <Card
+                                        bordered={false}
+                                        style={{
+                                            textAlign: "center",
+                                            borderRadius: 16,
+                                            background: "#fafafa"
+                                        }}
+                                    >
+
+                                        <Title level={5}>
+                                            Departments
+                                        </Title>
+
+                                        <Divider />
+
+                                        <Title level={2}>
+                                            {totalDepartments}
+                                        </Title>
+
+                                    </Card>
+
+                                </Col>
+
+                                <Col xs={24} md={8}>
+
+                                    <Card
+                                        bordered={false}
+                                        style={{
+                                            textAlign: "center",
+                                            borderRadius: 16,
+                                            background: "#fafafa"
+                                        }}
+                                    >
+
+                                        <Title level={5}>
+                                            Salary
+                                        </Title>
+
+                                        <Divider />
+
+                                        <Title level={2}>
+                                            ₱{totalSalary.toLocaleString()}
+                                        </Title>
+
+                                    </Card>
+
+                                </Col>
+
+                            </Row>
 
                         </Card>
 
                     )}
 
-                    {/* ADD EMPLOYEE MODAL */}
+                    {/* ADD MODAL */}
                     <Modal
                         title="Add Employee"
                         open={open}
+                        footer={null}
+                        centered
                         onCancel={() => {
 
                             setOpen(false);
@@ -586,7 +896,6 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
                             addForm.resetFields();
 
                         }}
-                        footer={null}
                     >
 
                         <Form
@@ -605,7 +914,7 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
                                     }
                                 ]}
                             >
-                                <Input />
+                                <Input size="large" />
                             </Form.Item>
 
                             <Form.Item
@@ -618,7 +927,7 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
                                     }
                                 ]}
                             >
-                                <Input />
+                                <Input size="large" />
                             </Form.Item>
 
                             <Form.Item
@@ -632,13 +941,17 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
                                 ]}
                             >
                                 <InputNumber
-                                    style={{ width: "100%" }}
+                                    size="large"
+                                    style={{
+                                        width: "100%"
+                                    }}
                                 />
                             </Form.Item>
 
                             <Button
                                 type="primary"
                                 htmlType="submit"
+                                size="large"
                                 block
                             >
                                 Save Employee
@@ -648,10 +961,12 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
 
                     </Modal>
 
-                    {/* EDIT EMPLOYEE MODAL */}
+                    {/* EDIT MODAL */}
                     <Modal
                         title="Edit Employee"
                         open={editOpen}
+                        footer={null}
+                        centered
                         onCancel={() => {
 
                             setEditOpen(false);
@@ -659,7 +974,6 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
                             editForm.resetFields();
 
                         }}
-                        footer={null}
                     >
 
                         <Form
@@ -678,7 +992,7 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
                                     }
                                 ]}
                             >
-                                <Input />
+                                <Input size="large" />
                             </Form.Item>
 
                             <Form.Item
@@ -691,7 +1005,7 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
                                     }
                                 ]}
                             >
-                                <Input />
+                                <Input size="large" />
                             </Form.Item>
 
                             <Form.Item
@@ -705,13 +1019,17 @@ Salary: ₱${Number(emp.salary).toLocaleString()}
                                 ]}
                             >
                                 <InputNumber
-                                    style={{ width: "100%" }}
+                                    size="large"
+                                    style={{
+                                        width: "100%"
+                                    }}
                                 />
                             </Form.Item>
 
                             <Button
                                 type="primary"
                                 htmlType="submit"
+                                size="large"
                                 block
                             >
                                 Update Employee
