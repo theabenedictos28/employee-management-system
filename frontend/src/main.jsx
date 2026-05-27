@@ -10,11 +10,7 @@ import {
 import "antd/dist/reset.css";
 
 import Login from "./pages/Login";
-
-function Dashboard() {
-    return <h1>Dashboard</h1>;
-}
-
+import Dashboard from "./pages/Dashboard";
 ReactDOM.createRoot(
     document.getElementById("root")
 ).render(
