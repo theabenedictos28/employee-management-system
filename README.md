@@ -45,7 +45,6 @@ Frontend
 - React Router DOM
   
 Backend
-- Node.js
 - Express.js
 - REST API
 
@@ -73,7 +72,6 @@ cd employee-management-system
 
 - Open SSMS and run:
 - CREATE DATABASE employee_db;
-
 - USE employee_db;
 
 CREATE TABLE employees (
@@ -93,9 +91,9 @@ CREATE TABLE users (
 --------------------------------------------------------------------
 3. Backend Setup
 
--cd backend
--npm install
--npm install mssql
+- cd backend
+- npm install
+- npm install mssql
 
 - Create db.js:
   
@@ -135,14 +133,18 @@ module.exports = sql.connect(config);
 
 During the development of this project, I encountered several challenges:
 
-- This was my first time using **Microsoft SQL Server (MSSQL)**, so setting up the database connection and configuration was initially difficult.
-- Configuring the `mssql` package and ensuring proper connection between backend and database required a lot of debugging.
-- Handling SQL queries and making sure data is correctly inserted, updated, and deleted was challenging at first.
-- Managing API integration between frontend and backend while keeping data in sync required careful state handling.
-- Aligning the UI properly using Ant Design components took time to ensure a clean and responsive layout.
-- Debugging connection issues between frontend requests and backend responses.
+- This was my first time using Microsoft SQL Server (MSSQL), so setting up the database connection and configuration was initially difficult.
 
-Despite these challenges, I was able to successfully complete the system and improve my understanding of full-stack development using MSSQL and React.
+ 
+- Configuring the mssql package and ensuring proper connection between the backend and database required a lot of debugging.
+
+- Aligning the UI properly using Ant Design components took time to ensure a clean and responsive layout.
+  
+- Debugging connection issues between frontend requests and backend responses.
+  
+I also utilized AI as an additional development assistant, which helped me with debugging, code suggestions, and improving implementation decisions.
+
+Despite these challenges, I was able to successfully complete the system and improve my understanding of full-stack development using React, Express and MSSQL.
 
 🎥 Demo Video
 
