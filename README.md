@@ -146,4 +146,4 @@ Despite these challenges, I was able to successfully complete the system and imp
 
 🎥 Demo Video
 
-Watch here: 
+Watch here: https://drive.google.com/drive/folders/1KDxIgo6cgkRTQvv4GwrvqsfTQa7HEo_x?usp=drive_link
