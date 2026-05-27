@@ -71,10 +71,10 @@ cd employee-management-system
 ---------------------------------------------------------------------
 2. Database Setup (MS SQL)
 
-Open SSMS and run:
-CREATE DATABASE employee_db;
+- Open SSMS and run:
+- CREATE DATABASE employee_db;
 
-USE employee_db;
+- USE employee_db;
 
 CREATE TABLE employees (
     id INT IDENTITY(1,1) PRIMARY KEY,
@@ -83,6 +83,7 @@ CREATE TABLE employees (
     salary DECIMAL(10,2) NOT NULL,
     created_at DATETIME DEFAULT GETDATE()
 );
+
 CREATE TABLE users (
     id INT IDENTITY(1,1) PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
@@ -92,11 +93,12 @@ CREATE TABLE users (
 --------------------------------------------------------------------
 3. Backend Setup
 
-cd backend
-npm install
-npm install mssql
+-cd backend
+-npm install
+-npm install mssql
 
-Create db.js:
+- Create db.js:
+  
 const sql = require("mssql");
 
 const config = {
@@ -112,20 +114,20 @@ const config = {
 
 module.exports = sql.connect(config);
 
-npm start
+- npm start
 ----------------------------------------------------------------------
 4. Frontend Setup
 
-cd frontend
-npm install
-npm run dev
+- cd frontend
+- npm install
+- npm run dev
 
-npm start
+- npm start
 ---------------------------------------------------------------------
 5. Login Credentials
 
-Username: admin
-Password: 123456
+- Username: admin
+- Password: 123456
 
 ----------------------------------------------------------------------
 
